@@ -1,0 +1,49 @@
+{
+    "name": "NanoClaw",
+    "slug": "nanoclaw",
+    "categories": [
+        20
+    ],
+    "date_created": "2026-07-13",
+    "type": "ct",
+    "updateable": true,
+    "privileged": false,
+    "has_arm": false,
+    "interface_port": 3100,
+    "documentation": "https://github.com/javexed/nanoclaw",
+    "website": "https://github.com/javexed/nanoclaw",
+    "logo": "https://raw.githubusercontent.com/javexed/nanoclaw/v2.1.53/public/webchat/icon-512.png",
+    "description": "NanoClaw is a self-hosted personal AI assistant. Each agent session runs in its own Docker sandbox; it ships a browser chat UI with MCP + skills support and a first-run setup wizard for connecting Claude or a local model.",
+    "install_methods": [
+        {
+            "type": "default",
+            "script": "ct/nanoclaw.sh",
+            "config_path": "/opt/nanoclaw/.env",
+            "resources": {
+                "cpu": 2,
+                "ram": 4096,
+                "hdd": 20,
+                "os": "Debian",
+                "version": "13"
+            }
+        }
+    ],
+    "default_credentials": {
+        "username": null,
+        "password": null
+    },
+    "notes": [
+        {
+            "text": "The first browser login becomes the owner; the bearer token is in /opt/nanoclaw/.env (WEBCHAT_TOKEN).",
+            "type": "info"
+        },
+        {
+            "text": "First boot builds the agent container image via Docker \u2014 allow several minutes.",
+            "type": "warning"
+        },
+        {
+            "text": "To sign in over Tailscale: install the Tailscale LXC addon, then open over your tailnet at :3100 \u2014 the first Tailscale login becomes owner. You can then enable HTTPS and retire the bearer token from the setup wizard / Settings.",
+            "type": "info"
+        }
+    ]
+}
