@@ -13,6 +13,9 @@ var_disk="${var_disk:-20}"
 var_os="${var_os:-debian}"
 var_version="${var_version:-13}"
 var_unprivileged="${var_unprivileged:-1}"
+# The agent sandboxes run on Docker. Nesting is already on by default; keyctl is
+# the systemd/Docker workaround needed to start dockerd in an unprivileged CT.
+var_keyctl="${var_keyctl:-1}"
 
 header_info "$APP"
 variables
