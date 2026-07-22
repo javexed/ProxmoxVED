@@ -12,7 +12,7 @@
     "interface_port": 3100,
     "documentation": "https://github.com/javexed/nanoclaw",
     "website": "https://github.com/javexed/nanoclaw",
-    "logo": "https://raw.githubusercontent.com/javexed/nanoclaw/channels-webchat/public/webchat/icon-512.png",
+    "logo": "https://raw.githubusercontent.com/javexed/nanoclaw/v2.2.0/public/webchat/icon-512.png",
     "description": "NanoClaw is a self-hosted personal AI assistant. Each agent session runs in its own Docker sandbox; it ships a browser chat UI with MCP + skills support and a first-run setup wizard for connecting Claude or a local model.",
     "install_methods": [
         {
