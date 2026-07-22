@@ -28,27 +28,17 @@ msg_info "Enabling pnpm"
 $STD corepack enable
 msg_ok "Enabled pnpm"
 
-# Two install modes, selected by NANOCLAW_INSTALL_MODE (export it before
-# running the ct script — lxc-attach inherits the caller's environment by
-# default, same mechanism NANOCLAW_SRC_ARCHIVE below relies on):
-#   release (default) — the latest tagged GitHub release (currently v2.2.0).
-#                        Stable; matches deploy/RELEASING.md's cut.
-#   test               — the channels-webchat branch HEAD. Unreleased fixes
-#                        ahead of the last tag; a branch archive has no .git,
-#                        so the app's first-boot dev-pull tripwire stays quiet.
-NANOCLAW_INSTALL_MODE="${NANOCLAW_INSTALL_MODE:-release}"
-if [ "$NANOCLAW_INSTALL_MODE" = "test" ]; then
-  msg_info "Fetching NanoClaw (channels-webchat, test mode)"
-  # Override the exact source with NANOCLAW_SRC_ARCHIVE.
-  NANOCLAW_SRC_ARCHIVE="${NANOCLAW_SRC_ARCHIVE:-https://github.com/javexed/nanoclaw/archive/refs/heads/channels-webchat.tar.gz}"
-  mkdir -p /opt/nanoclaw
-  curl -fsSL "$NANOCLAW_SRC_ARCHIVE" | tar xz -C /opt/nanoclaw --strip-components=1
-  msg_ok "Fetched NanoClaw (channels-webchat, test mode)"
-else
-  msg_info "Fetching NanoClaw (latest release)"
-  fetch_and_deploy_gh_release "nanoclaw" "javexed/nanoclaw" "tarball" "latest" "/opt/nanoclaw"
-  msg_ok "Fetched NanoClaw (latest release)"
-fi
+msg_info "Fetching NanoClaw (channels-webchat)"
+# Pulls the channels-webchat branch tarball from the public GitHub fork — it
+# carries the webchat build + wizard and the latest fixes ahead of a tagged
+# release. A branch archive has no .git, so the app's first-boot dev-pull
+# tripwire stays quiet. Override the source with NANOCLAW_SRC_ARCHIVE.
+# For a release build, swap this block for:
+#   fetch_and_deploy_gh_release "nanoclaw" "javexed/nanoclaw" "tarball" "latest" "/opt/nanoclaw"
+NANOCLAW_SRC_ARCHIVE="${NANOCLAW_SRC_ARCHIVE:-https://github.com/javexed/nanoclaw/archive/refs/heads/channels-webchat.tar.gz}"
+mkdir -p /opt/nanoclaw
+curl -fsSL "$NANOCLAW_SRC_ARCHIVE" | tar xz -C /opt/nanoclaw --strip-components=1
+msg_ok "Fetched NanoClaw (channels-webchat)"
 
 cd /opt/nanoclaw
 # Build + configure + service all live in the app's shared deploy script
