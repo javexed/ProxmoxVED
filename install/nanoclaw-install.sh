@@ -30,12 +30,8 @@ msg_ok "Enabled pnpm"
 
 msg_info "Fetching NanoClaw"
 # Latest tagged GitHub release. Pin a specific version with var_appversion —
-# fetch_and_deploy_gh_release honors it natively (${var_appversion:-latest}),
-# same as every other script in this framework; no custom override needed.
-# Deliberately release-only: upstream requires official release tarballs, not
-# branch/HEAD tracking (verified against all 72 install/*.sh scripts upstream
-# ships — none install from a branch), so there is no "test" mode here even
-# though this entry hasn't been submitted upstream yet.
+# fetch_and_deploy_gh_release honors it natively, same as every other script
+# in this framework; no custom override needed.
 fetch_and_deploy_gh_release "nanoclaw" "javexed/nanoclaw" "tarball" "latest" "/opt/nanoclaw"
 msg_ok "Fetched NanoClaw"
 
