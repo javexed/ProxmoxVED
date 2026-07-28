@@ -3,7 +3,7 @@ source <(curl -fsSL "${COMMUNITY_SCRIPTS_URL:-https://raw.githubusercontent.com/
 # Copyright (c) 2021-2026 community-scripts ORG
 # Author: javexed
 # License: MIT | https://github.com/community-scripts/ProxmoxVED/raw/main/LICENSE
-# Source: https://github.com/javexed/nanoclaw
+# Source: https://github.com/javexed/nanoclaw-webchat
 
 APP="NanoClaw"
 var_tags="${var_tags:-ai;assistant}"
@@ -31,7 +31,7 @@ function update_script() {
     exit
   fi
 
-  if check_for_gh_release "nanoclaw" "javexed/nanoclaw"; then
+  if check_for_gh_release "nanoclaw" "javexed/nanoclaw-webchat"; then
     msg_info "Stopping Service"
     systemctl stop nanoclaw
     msg_ok "Stopped Service"
@@ -41,7 +41,7 @@ function update_script() {
     cp /opt/nanoclaw/.env /opt/nanoclaw_env_backup
     msg_ok "Backed up Data"
 
-    CLEAN_INSTALL=1 fetch_and_deploy_gh_release "nanoclaw" "javexed/nanoclaw" "tarball" "latest" "/opt/nanoclaw"
+    CLEAN_INSTALL=1 fetch_and_deploy_gh_release "nanoclaw" "javexed/nanoclaw-webchat" "prebuild" "latest" "/opt/nanoclaw" 'nanoclaw-webchat-composed-*.tar.gz'
 
     msg_info "Restoring Data"
     cp -r /opt/nanoclaw_data_backup/. /opt/nanoclaw/data

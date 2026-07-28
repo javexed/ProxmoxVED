@@ -3,7 +3,7 @@
 # Copyright (c) 2021-2026 community-scripts ORG
 # Author: javexed
 # License: MIT | https://github.com/community-scripts/ProxmoxVED/raw/main/LICENSE
-# Source: https://github.com/javexed/nanoclaw
+# Source: https://github.com/javexed/nanoclaw-webchat
 
 source /dev/stdin <<<"$FUNCTIONS_FILE_PATH"
 color
@@ -29,18 +29,20 @@ $STD corepack enable
 msg_ok "Enabled pnpm"
 
 msg_info "Fetching NanoClaw"
-# Latest tagged GitHub release. Pin a specific version with var_appversion —
-# fetch_and_deploy_gh_release honors it natively, same as every other script
-# in this framework; no custom override needed.
-fetch_and_deploy_gh_release "nanoclaw" "javexed/nanoclaw" "tarball" "latest" "/opt/nanoclaw"
+# Latest tagged release of the webchat product. The asset is a COMPOSED tree
+# (upstream nanoclaw + the module hook seam + webchat), gated on release by a
+# coverage check and both test suites — so the CT installs a build that is
+# already proven, with no compile-from-source step here. Pin a specific
+# version with var_appversion; fetch_and_deploy_gh_release honors it natively.
+fetch_and_deploy_gh_release "nanoclaw" "javexed/nanoclaw-webchat" "prebuild" "latest" "/opt/nanoclaw" 'nanoclaw-webchat-composed-*.tar.gz'
 msg_ok "Fetched NanoClaw"
 
 cd /opt/nanoclaw
 # Build + configure + service all live in the app's shared deploy script
 # (deploy/webchat-deploy.sh) — the SAME script a clean-VM install runs — so the
-# webchat deploy flow never drifts between the two. The inline block below is a
-# fallback for app branches that predate it; remove once channels-webchat ships
-# the script everywhere.
+# webchat deploy flow never drifts between the two. Every release asset carries
+# it (the release gate asserts so); the inline block below is a fallback for
+# older pinned versions.
 if [ -f deploy/webchat-deploy.sh ]; then
   msg_info "Installing NanoClaw (shared webchat deploy)"
   $STD bash deploy/webchat-deploy.sh --dir /opt/nanoclaw --port 3100
