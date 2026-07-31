@@ -43,6 +43,24 @@ msg_info "Fetching NanoClaw"
 # into the target — the same result the prebuild path produces, so the override
 # changes where the bytes come from and nothing about how they are deployed.
 if [ -n "${NANOCLAW_ARTIFACT_URL:-}" ]; then
+  # fetch_and_deploy_from_url takes the URL and a target directory — it derives
+  # the filename from the URL and has no asset-pattern argument, so nothing
+  # otherwise constrains WHICH tarball is fetched. It only verifies the download
+  # is a gzip archive, which means a wrong-but-valid URL installs cleanly and the
+  # container misbehaves later. Assert the same shape the release path matches by
+  # pattern, so a mistyped URL fails here instead of at runtime.
+  # Strip any query string before matching: presigned and token-bearing URLs end
+  # in ?sig=... and would otherwise fail a check that fetch_and_deploy_from_url
+  # itself tolerates — the guard should catch typos, not reject valid sources.
+  _artifact_name="${NANOCLAW_ARTIFACT_URL##*/}"
+  _artifact_name="${_artifact_name%%\?*}"
+  case "$_artifact_name" in
+  nanoclaw-webchat-composed-*.tar.gz) ;;
+  *)
+    msg_error "NANOCLAW_ARTIFACT_URL must point at a nanoclaw-webchat-composed-*.tar.gz (got: ${_artifact_name:-<empty>})"
+    exit 1
+    ;;
+  esac
   fetch_and_deploy_from_url "$NANOCLAW_ARTIFACT_URL" "/opt/nanoclaw"
 else
   # Latest tagged release of the webchat product. The asset is a COMPOSED tree
