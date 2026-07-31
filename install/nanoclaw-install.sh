@@ -29,12 +29,29 @@ $STD corepack enable
 msg_ok "Enabled pnpm"
 
 msg_info "Fetching NanoClaw"
-# Latest tagged release of the webchat product. The asset is a COMPOSED tree
-# (upstream nanoclaw + the module hook seam + webchat), gated on release by a
-# coverage check and both test suites — so the CT installs a build that is
-# already proven, with no compile-from-source step here. Pin a specific
-# version with var_appversion; fetch_and_deploy_gh_release honors it natively.
-fetch_and_deploy_gh_release "nanoclaw" "javexed/nanoclaw-webchat" "prebuild" "latest" "/opt/nanoclaw" 'nanoclaw-webchat-composed-*.tar.gz'
+# NANOCLAW_ARTIFACT_URL installs a specific composed tarball instead of the
+# published release. It exists so a release candidate can be proven in a real CT
+# BEFORE it is published: scripts/release.sh gates and stages the artifact
+# without publishing, and scripts/publish-release.sh later ships exactly those
+# bytes — so what is validated here is what end users receive, not a rebuild.
+#
+# Serve the staged file over the local network and pass its URL:
+#   NANOCLAW_ARTIFACT_URL=http://<host>:8000/nanoclaw-webchat-composed-v2.3.8.tar.gz
+#
+# fetch_and_deploy_from_url is the framework's own helper: it auto-detects the
+# gzip archive, strips the single top-level directory, and copies the payload
+# into the target — the same result the prebuild path produces, so the override
+# changes where the bytes come from and nothing about how they are deployed.
+if [ -n "${NANOCLAW_ARTIFACT_URL:-}" ]; then
+  fetch_and_deploy_from_url "$NANOCLAW_ARTIFACT_URL" "/opt/nanoclaw"
+else
+  # Latest tagged release of the webchat product. The asset is a COMPOSED tree
+  # (upstream nanoclaw + the module hook seam + webchat), gated on release by a
+  # coverage check and both test suites — so the CT installs a build that is
+  # already proven, with no compile-from-source step here. Pin a specific
+  # version with var_appversion; fetch_and_deploy_gh_release honors it natively.
+  fetch_and_deploy_gh_release "nanoclaw" "javexed/nanoclaw-webchat" "prebuild" "latest" "/opt/nanoclaw" 'nanoclaw-webchat-composed-*.tar.gz'
+fi
 msg_ok "Fetched NanoClaw"
 
 cd /opt/nanoclaw
